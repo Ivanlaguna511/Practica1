@@ -7,7 +7,8 @@ public class Cliente {
                 java.io.BufferedReader tec =
                         new java.io.BufferedReader(
                                 new java.io.InputStreamReader(System.in));
-                java.net.Socket miSocket = new java.net.Socket("localhost", PUERTO);
+                //"localhost", PUERTO
+                java.net.Socket miSocket = new java.net.Socket("192.168.0.245", PUERTO);
                 java.io.BufferedReader inred =
                         new java.io.BufferedReader(
                                 new java.io.InputStreamReader(miSocket.getInputStream()));

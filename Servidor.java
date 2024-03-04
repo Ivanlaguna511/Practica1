@@ -12,7 +12,8 @@ public class Servidor {
         almacenamiento.put("hector", "1234");
         almacenamiento.put("sdis", "asdf");
         final String[] lastLoggedInUser = {"No user logged in"};
-        try (java.net.ServerSocket servidor = new java.net.ServerSocket(PUERTO)) {
+        //PUERTO
+        try (java.net.ServerSocket servidor = new java.net.ServerSocket(PUERTO, 0, java.net.InetAddress.getByName("0.0.0.0"))) {
             while (true) {
                 try {
                     System.out.println("----Server waiting client----");
