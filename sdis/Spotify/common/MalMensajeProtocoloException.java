@@ -1,4 +1,7 @@
 package sdis.Spotify.common;
 
-public class MalMensajeProtocoloException {
+public class MalMensajeProtocoloException extends Exception {
+    public MalMensajeProtocoloException(String errorMessage) {
+        super(errorMessage);
+    }
 }
