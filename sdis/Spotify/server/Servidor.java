@@ -64,22 +64,23 @@ public class Servidor {
                                         fin = true;
                                     } else {
                                         outred.println("Credentials do not match our records. Enter username again:");
+
                                     }
                                 }
+
                             }
                         } catch (java.io.IOException ioe) {
                             System.err.println("Cerrando socket de cliente");
                             ioe.printStackTrace(System.err);
                         }
+                        System.out.println("Last logged in user for this thread: " + Arrays.toString(lastLoggedInUser));
                     };
+
                     Thread t = new Thread(sirviente, "Sirviente echo");
                     t.start();
                 } catch (java.io.IOException e) {
                     System.err.println("Cerrando socket de cliente");
                     e.printStackTrace(System.err);
-                } finally {
-                    // Muestra el último usuario logueado por este hilo
-                    System.out.println("Last logged in user for this thread: " + Arrays.toString(lastLoggedInUser));
                 }
             }
         } catch (java.io.IOException e) {
