@@ -24,7 +24,9 @@ public class Sirviente implements Runnable {
 
     public void run() {
         try {
+            System.out.println("----Server waiting client----");
             while (true) {
+
                 String mensaje;  //String multipurpose
                 MensajeProtocolo me = (MensajeProtocolo) ois.readObject();
                 MensajeProtocolo ms;
@@ -41,18 +43,18 @@ public class Sirviente implements Runnable {
                     case ERROR:
                     case NOTAUTH:
                     case READL:
-                        mensaje = this.mapa.pop(me.getIdCola());
-                        if (mensaje != null) {
-                            ms = new MensajeProtocolo(Primitiva.MEDIA, mensaje);
-                            System.out.println("Sirviente: " + ns + ": [ME: " + ms); // depuracion me
-                        } else {
+                        mensaje = mapa.pop(me.getIdCola());
+                        if (null != mensaje) {
+                        ms = new MensajeProtocolo(Primitiva.MEDIA, mensaje);
+                        System.out.println("Sirviente: " + ns + ": [ME: " + ms); // depuracion me
+                    } else {
+                            System.out.println(mensaje); // depuracion me
                             ms = new MensajeProtocolo(Primitiva.EMPTY);
                             System.out.println("Sirviente: " + ns + ": [ME: " + ms); // depuracion me
-                        }
-                        break;
+                    }
+                    break;
                     case DELETEL:
-                        mensaje = mapa.pop(me.getMensaje());
-                        if (null != mensaje) {
+                        if (null != (mensaje = mapa.pop(me.getIdCola()))) {
                             ms = new MensajeProtocolo(Primitiva.DELETED, mensaje);
                             System.out.println("Sirviente: " + ns + ": [ME: " + ms); // depuracion me
                         } else {
