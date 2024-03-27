@@ -1,95 +1,39 @@
-
-import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
+package sdis.spotify.server;
+import sdis.utils.MultiMap;
 
 public class Servidor {
-    public static final int PUERTO = 2000;
-    private static ConcurrentHashMap<String, String> almacenamiento = new ConcurrentHashMap<>();
-    private static BlacklistManager managerConexiones = new BlacklistManager(4);
-    private static BlacklistManager managerLogins = new BlacklistManager(3);
-
-    public static void main(String[] args) {
-        almacenamiento.put("hector", "1234");
-        almacenamiento.put("sdis", "asdf");
-        final String[] lastLoggedInUser = {"No user logged in"};
-        //PUERTO
-        try (java.net.ServerSocket servidor = new java.net.ServerSocket(PUERTO, 0, java.net.InetAddress.getByName("0.0.0.0"))) {
-            while (true) {
-                try {
-                    System.out.println("----Server waiting client----");
-                    java.net.Socket sock = servidor.accept();
-                    java.io.BufferedReader inred =
-                            new java.io.BufferedReader(
-                                    new java.io.InputStreamReader(sock.getInputStream()));
-                    java.io.PrintStream outred =
-                            new java.io.PrintStream(sock.getOutputStream());
-
-                    Runnable sirviente = () -> {
-                        try {
-                            boolean fin = false;
-
-                            String clientIP = sock.getInetAddress().getHostAddress();
-                            managerConexiones.registraIntento(clientIP);
-                            System.out.println("[BM] (connections) for " +  clientIP + " = " + managerConexiones.getIntentos(clientIP));
-                            // Verificar si la IP está en la lista negra de conexiones
-                            if (managerConexiones.isIPBaneada(clientIP)) {
-                                outred.println("Err Max Number of connections reached.");
-                                fin = true;
-                            }
-                            else{
-                                outred.println("Welcome, please type your credentials to LOG in");
-                            }
-
-                            while (!fin) {
-                                String username = inred.readLine();
-                                System.out.println("Usuario: " + username);
-                                lastLoggedInUser[0] = username;
-                                outred.println(username);
-                                outred.println("OK: password?");
-
-                                String password = inred.readLine();
-                                System.out.println("Contraseña: " + password);
-                                outred.println(password);
-
-                                // Comprobar si el par corresponde con alguno de sus registros
-                                if (coincide(username, password)) {
-                                    outred.println("User successfully logged in");
-                                    fin = true;
-                                } else {
-                                    // Incrementar intentos fallidos y verificar si la IP debe ser baneada
-                                    managerLogins.registraIntento(clientIP);
-                                    System.out.println("[BM] (login fails) for " +  clientIP + " = " + managerLogins.getIntentos(clientIP));
-                                    if (managerLogins.isIPBaneada(clientIP)) {
-                                        outred.println("Err Max Number of login attempts reached.");
-                                        fin = true;
-                                    } else {
-                                        outred.println("Credentials do not match our records. Enter username again:");
-
-                                    }
-                                }
-
-                            }
-                        } catch (java.io.IOException ioe) {
-                            System.err.println("Cerrando socket de cliente");
-                            ioe.printStackTrace(System.err);
-                        }
-                        System.out.println("Last logged in user for this thread: " + Arrays.toString(lastLoggedInUser));
-                    };
-
-                    Thread t = new Thread(sirviente, "Sirviente echo");
-                    t.start();
-                } catch (java.io.IOException e) {
-                    System.err.println("Cerrando socket de cliente");
-                    e.printStackTrace(System.err);
-                }
+    public static void main(String args[]) {
+        int PUERTO = 2000;  //puerto de servicio
+        int NThreads = 5;   //# hilos del ThreadPool
+        MultiMap<String, String>
+                mapa = new MultiMap();
+        java.util.concurrent.ExecutorService exec =
+                java.util.concurrent.Executors.newFixedThreadPool(NThreads);
+        try {
+            java.net.ServerSocket sock = new java.net.ServerSocket(PUERTO);
+            System.err.println("Servidor: WHILE [INICIANDO]");
+            Thread mainServer = new Thread(() -> {
+            try {
+                while (true) {
+                    java.net.Socket socket = sock.accept();
+                    try {
+                        sdis.spotify.server.Sirviente serv =
+                                new sdis.spotify.server.Sirviente(socket, mapa);
+                        exec.execute(serv);
+                    } catch (java.io.IOException ioe) {
+                        System.out.println("Servidor: WHILE [ERR ObjectStreams]");
+                    }
+                }  //fin-while
+            } catch (java.io.IOException ioe) {
+                System.err.println("Servidor: WHILE [Error.E/S]");
+            } catch (Exception e) {
+                System.err.println("Servidor: WHILE [Error.execute]");
             }
-        } catch (java.io.IOException e) {
-            System.err.println("Cerrando socket de servicio");
-            e.printStackTrace(System.err);
+            }, "RUN(WHILE)");  //fin-newThread separado para servidor
+            mainServer.start();
+            System.out.println("Servidor: [CORRIENDO]");
+        } catch (java.io.IOException ioe) {
+            System.out.println("Servidor: [ERR SOCKET]");
         }
-    }
-
-    private static boolean coincide(String username, String password) {
-        return almacenamiento.containsKey(username) && almacenamiento.get(username).equals(password);
     }
 }
