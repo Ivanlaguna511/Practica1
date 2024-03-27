@@ -3,7 +3,7 @@ package sdis.Spotify.common;
     public enum Primitiva {
         INFO,
         XAUTH,
-        ADDD2L,
+        ADD2L,
         ADDED,
         READL,
         MEDIA,
