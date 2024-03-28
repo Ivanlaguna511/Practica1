@@ -1,4 +1,4 @@
-package ejemplo.socket;
+package sdis.utils;
 import java.util.concurrent.ConcurrentHashMap;
 public class BlacklistManager {
     private final ConcurrentHashMap<String, Integer> intentosPorID = new ConcurrentHashMap<>();
@@ -15,7 +15,9 @@ public class BlacklistManager {
     public synchronized void registraIntento(String direccionIp) {
         intentosPorID.put(direccionIp, intentosPorID.getOrDefault(direccionIp, 0) + 1);
     }
-
+    public synchronized void clientedesconectado(String direccionIp) {
+        intentosPorID.put(direccionIp, intentosPorID.getOrDefault(direccionIp, 0) - 1);
+    }
     public Integer getIntentos(String direccionIp) {
         return intentosPorID.getOrDefault(direccionIp,0);
     }
