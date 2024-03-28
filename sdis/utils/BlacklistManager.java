@@ -15,7 +15,9 @@ public class BlacklistManager {
     public synchronized void registraIntento(String direccionIp) {
         intentosPorID.put(direccionIp, intentosPorID.getOrDefault(direccionIp, 0) + 1);
     }
-
+    public synchronized void clientedesconectado(String direccionIp) {
+        intentosPorID.put(direccionIp, intentosPorID.getOrDefault(direccionIp, 0) - 1);
+    }
     public Integer getIntentos(String direccionIp) {
         return intentosPorID.getOrDefault(direccionIp,0);
     }
