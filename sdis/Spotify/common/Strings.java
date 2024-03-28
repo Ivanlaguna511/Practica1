@@ -2,7 +2,13 @@ package sdis.Spotify.common;
 
 public class Strings {
     public static final String SERVER_WAITING = "----Server waiting for Client----";
-    public static final String WELCOME_MESSAGE = "Welcome, please type your credentials to LOG in";
+    public static final String WELCOME_MESSAGE = "Welcome to \n" +
+            "░██████╗██████╗░░█████╗░████████╗██╗███████╗██╗░░░██╗\n" +
+            "██╔════╝██╔══██╗██╔══██╗╚══██╔══╝██║██╔════╝╚██╗░██╔╝\n" +
+            "╚█████╗░██████╔╝██║░░██║░░░██║░░░██║█████╗░░░╚████╔╝░\n" +
+            "░╚═══██╗██╔═══╝░██║░░██║░░░██║░░░██║██╔══╝░░░░╚██╔╝░░\n" +
+            "██████╔╝██║░░░░░╚█████╔╝░░░██║░░░██║██║░░░░░░░░██║░░░\n" +
+            "╚═════╝░╚═╝░░░░░░╚════╝░░░░╚═╝░░░╚═╝╚═╝░░░░░░░░╚═╝░░░";
     public static final String  USER_LOGGED_UNSUCCESFULLY = "Credentials does not match our records: Enter\n" + "username again:";
     public static final String USER_LOGGED_SUCCESSFULLY = "User successfully logged in";
     public static final String LIST_ADDED_SUCCESSFULLY = "List added successfully";
