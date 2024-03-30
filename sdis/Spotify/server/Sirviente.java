@@ -41,7 +41,12 @@ public class Sirviente implements Runnable {
                 ms = new MensajeProtocolo(Primitiva.ERROR, Strings.MAX_CONNECTIONS_REACHED_ERROR);
                 oos.writeObject(ms);
                 fin = true;
-            }else{
+            }else if(managerLogins.isIPBaneada(clientIP)){
+                ms = new MensajeProtocolo(Primitiva.ERROR, Strings.MAX_LOGIN_ATTEMPTS_REACHED_ERROR);
+                oos.writeObject(ms);
+                fin = true;
+            }
+            else{
                 ms = new MensajeProtocolo(Primitiva.INFO, Strings.WELCOME_MESSAGE);
                 oos.writeObject(ms);
             }
@@ -49,7 +54,7 @@ public class Sirviente implements Runnable {
                 String mensaje;  //String multipurpose
                 MensajeProtocolo me = (MensajeProtocolo) ois.readObject();
                 // me y ms: mensajes entrante y saliente
-                System.out.println("Sirviente: " + ns + ": [ME: " + me); // depuracion me
+                System.out.println("Sirviente: " + ns +" from: "+ clientIP + ": [ME: " + me); // depuracion me
                 switch (me.getPrimitiva()) {
                     case XAUTH:
                         String username = me.getIdCola();
