@@ -35,6 +35,9 @@ public class ClientesInteractivos {
                   String Password = tec.readLine();
                   pruebaPeticionRespuesta(new MensajeProtocolo(Primitiva.XAUTH, Usuario, Password));
                   MensajeProtocolo mr = (MensajeProtocolo) ois.readObject();
+                  if(mr.getPrimitiva().equals(Primitiva.ERROR)){
+                      fin = true;
+                  }
                   System.out.println(mr);
                 }
                 else if (linea.equals("2")){
