@@ -1,22 +1,24 @@
+package sdis.Spotify.client.unit;
+import sdis.Spotify.common.Primitiva;
+import sdis.Spotify.common.MensajeProtocolo;
+import sdis.Spotify.common.MalMensajeProtocoloException;
 
-package sdis.spotify.client.unit;
-import sdis.spotify.common.Primitiva;
-import sdis.spotify.common.MensajeProtocolo;
-import sdis.spotify.common.MalMensajeProtocoloException;
+import java.sql.SQLOutput;
+import java.util.Scanner;
+
 public class Add2L {
     final private int PUERTO = 2000;
     static java.io.ObjectInputStream ois = null;
     static java.io.ObjectOutputStream oos = null;
 
     public static void main(String[] args) throws java.io.IOException {
+        Scanner s= new Scanner(System.in);
         String [] array=new String[3];
         array[0]="localhost";
-        array[1]="hector";
-        array[2]="1234";
+
 
         String host = array[0];  //localhost o ip|dn del servidor
-        String clave = array[1];  //usuario del cliente
-        String valor = array[2];  //contraseña del cliente
+
 
         java.net.Socket sock = new java.net.Socket(host, 2000);
         try {
@@ -24,8 +26,17 @@ public class Add2L {
             ois = new java.io.ObjectInputStream(sock.getInputStream());
             MensajeProtocolo minfo = (MensajeProtocolo) ois.readObject();
             System.out.println(minfo);
-            pruebaPeticionRespuesta(new MensajeProtocolo(Primitiva.ADD2L, clave,
-                    valor));
+            if(!minfo.getPrimitiva().equals(Primitiva.ERROR)){
+                System.out.println("Introduzca playlist");
+                array[1]=s.nextLine();
+                System.out.println("Introduzca cancion");
+                array[2]=s.nextLine();
+                String clave = array[1];  //Playlis del cliente
+                String valor = array[2];  //contraseña del clitente
+                pruebaPeticionRespuesta(new MensajeProtocolo(Primitiva.ADD2L, clave,
+                        valor));
+            }
+
         } catch (java.io.EOFException e) {
             System.err.println("Cliente: Fin de conexión.");
         } catch (java.io.IOException e) {
