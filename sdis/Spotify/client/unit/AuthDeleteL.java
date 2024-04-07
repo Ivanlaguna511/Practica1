@@ -1,40 +1,47 @@
-package sdis.spotify.client.unit;
+package sdis.Spotify.client.unit;
 
-import sdis.spotify.common.MalMensajeProtocoloException;
-import sdis.spotify.common.MensajeProtocolo;
-import sdis.spotify.common.Primitiva;
+import sdis.Spotify.common.MalMensajeProtocoloException;
+import sdis.Spotify.common.MensajeProtocolo;
+import sdis.Spotify.common.Primitiva;
+
+import java.util.Scanner;
 
 public class AuthDeleteL {
     final private int PUERTO = 2000;
     static java.io.ObjectInputStream ois = null;
     static java.io.ObjectOutputStream oos = null;
     public static void main(String[] args) throws java.io.IOException {
+        Scanner s=new Scanner(System.in);
         String [] array=new String[4];
         array[0]="localhost";
-        array[1]="dsa";
-        array[2]="1234";
-        array[3]="lista1";
+
         String host = array[0];  //localhost o ip|dn del servidor
-        String usuario = array[1];  //usuario del cliente
-        String contraseña = array[2];  //contraseña del cliente
-        String clave=array[3];
+
         java.net.Socket sock = new java.net.Socket(host, 2000);
         try {
             oos = new java.io.ObjectOutputStream(sock.getOutputStream());
             ois = new java.io.ObjectInputStream(sock.getInputStream());
             MensajeProtocolo minfo = (MensajeProtocolo) ois.readObject();
             System.out.println(minfo);
-            pruebaPeticionRespuesta(new MensajeProtocolo(Primitiva.XAUTH, usuario, contraseña));
-            MensajeProtocolo mensaje1=(MensajeProtocolo) ois.readObject();
+            if(!minfo.getPrimitiva().equals(Primitiva.ERROR)){
+                System.out.println("introduzca su nombre de usuario");
+                array[1]=s.nextLine();
+                System.out.println("introduzca su contraseña");
+                array[2]=s.nextLine();
+                String usuario = array[1];  //usuario del cliente
+                String contraseña = array[2];  //contraseña del cliente
+                pruebaPeticionRespuesta(new MensajeProtocolo(Primitiva.XAUTH, usuario, contraseña));
+                MensajeProtocolo mensaje1=(MensajeProtocolo) ois.readObject();
+                System.out.println("< " + mensaje1);
 
-            if(mensaje1.getPrimitiva()==Primitiva.XAUTH){
-                pruebaPeticionRespuesta(new MensajeProtocolo(Primitiva.DELETEL,clave));
-                System.out.println("< "+(MensajeProtocolo) ois.readObject());
+                if(mensaje1.getPrimitiva()==Primitiva.XAUTH){
+                    System.out.println("introduzca playlist");
+                    array[3]=s.nextLine();
+                    String clave=array[3];
+                    pruebaPeticionRespuesta(new MensajeProtocolo(Primitiva.DELETEL,clave));
+                    System.out.println("< "+(MensajeProtocolo) ois.readObject());
+                }
             }
-            if(mensaje1.getPrimitiva()==Primitiva.NOTAUTH){
-                System.out.println("< "+mensaje1);
-            }
-
         } catch (java.io.EOFException e) {
             System.err.println("Cliente: Fin de conexión.");
         } catch (java.io.IOException e) {
