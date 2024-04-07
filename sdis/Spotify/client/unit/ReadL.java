@@ -1,19 +1,21 @@
-package sdis.spotify.client.unit;
-import sdis.spotify.common.Primitiva;
-import sdis.spotify.common.MensajeProtocolo;
-import sdis.spotify.common.MalMensajeProtocoloException;
+package sdis.Spotify.client.unit;
+import sdis.Spotify.common.Primitiva;
+import sdis.Spotify.common.MensajeProtocolo;
+import sdis.Spotify.common.MalMensajeProtocoloException;
+
+import java.util.Scanner;
+
 public class ReadL {
     final private int PUERTO = 2000;
     static java.io.ObjectInputStream ois = null;
     static java.io.ObjectOutputStream oos = null;
     public static void main(String[] args) throws java.io.IOException {
+        Scanner s= new Scanner(System.in);
         String [] array=new String[3];
         array[0]="localhost";
-        array[1]="hector";
-        array[2]="1234";
+
         String host = array[0];  //localhost o ip|dn del servidor
-        String usuario = array[1];  //usuario del cliente
-        String clave = array[2];  //contraseña del cliente
+
 
         java.net.Socket sock = new java.net.Socket(host, 2000);
         try {
@@ -21,8 +23,13 @@ public class ReadL {
             ois = new java.io.ObjectInputStream(sock.getInputStream());
             MensajeProtocolo minfo = (MensajeProtocolo) ois.readObject();
             System.out.println(minfo);
-            pruebaPeticionRespuesta(new MensajeProtocolo(Primitiva.READL,
-                    clave));
+            if(!minfo.getPrimitiva().equals(Primitiva.ERROR)){
+                System.out.println("introduzca la playlist");
+                array[1]=s.nextLine();
+                String usuario = array[1];  //usuario del cliente
+                pruebaPeticionRespuesta(new MensajeProtocolo(Primitiva.READL, usuario));
+            }
+
         } catch (java.io.EOFException e) {
             System.err.println("Cliente: Fin de conexión.");
         } catch (java.io.IOException e) {
